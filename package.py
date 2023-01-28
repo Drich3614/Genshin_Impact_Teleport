@@ -1,17 +1,21 @@
 import time
 import zipfile
+import shutil
 
-# import sys
+import sys
 import os
 from urllib.parse import quote
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stdin.reconfigure(encoding='utf-8')
+
 print("Don't Run in Your Computer, Run in Server")
 time.sleep(10)
-except_folders = [".git", ".vscode", "zips",".github"]
+except_folders = ["AutoGeneratePoint", ".git", ".vscode", "zips", ".github", "OtherFile"]
 no_zip_folders = [
     "AutoGeneratePoint",
-    # "Genshin_Impact_Teleport",
-    # "ManualCollectPoint",
-]  
+    "OtherFile",
+    "ManualCollectPoint",
+]  # "ManualCollectPoint"]
 
 # 获得当前路径
 path = os.getcwd()
@@ -23,13 +27,7 @@ def log(text):
     with open(path_zips+"/log.txt", "a", encoding="utf-8") as f:
         f.write(text+"\n")
         f.close()
-top_text = """
-## [Genshin_Impact_Teleport Main](https://github.com/Sam5440/Genshin_Impact_Teleport/edit/main/README.md)
-
->![](https://komarev.com/ghpvc/?username=done439)
->![](https://komarev.com/ghpvc/?username=done438)
->![](https://komarev.com/ghpvc/?username=done437)
-""".strip()        
+        
 def readme_create(readme_path, text):
     decode_code = "utf-8"
     text = text.encode().decode(decode_code)
@@ -37,7 +35,7 @@ def readme_create(readme_path, text):
         with open(readme_path, "w", encoding=decode_code) as f:
             #写入时间
             time_now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            f.write(f"# Generate Time-{time_now}\n\n{top_text}\n\n")
+            f.write(f"# {time_now}\n\n")
             f.close()
     # 在readme文件后面补充一行
     with open(readme_path, "a", encoding=decode_code) as f:
@@ -122,30 +120,48 @@ for k, v in zip_task.items():
         log(f"进度：{i}/{l}\n=======跳过文件夹：{k}->{v[1]}")
         continue
     zip_folder(k, v[1].replace("\\", "/"))
-    readme_path = os.path.dirname(v[0]) + "/readme.md"
+    #readme_path = os.path.dirname(v[0]) + "/readme.md"
     # 获得压缩包文件名
     
-    url = (
-        "https://raw.githubusercontent.com/Sam5440/Genshin_Impact_Teleport/download/"
-        + quote(v[1].replace("\\", "/").replace("zips/", ""))
-    )
+    #url = (
+    #    "https://raw.githubusercontent.com/Sam5440/Genshin_Impact_Teleport_Files/main/"
+    #    + quote(v[1].replace("\\", "/").replace("zips/", ""))
+    #)
     # print(f"进度：{i}/{l}\n=======写入readme：{k}->{v[1]}")
     
-    readme_create(readme_path, f"### [{zip_name}]({url})\n\n")
+    #readme_create(readme_path, f"### [{zip_name}]({url})\n\n")
 
 
+rootdir = 'zips'
+for zipparent, zipdirnames, zipfilenames in os.walk(rootdir):
+    for zipfilename in zipfilenames:
+        OrPath = os.path.join(zipparent, zipfilename)
+        readmePath = os.path.join(zipparent, "README.md")
+        replaceOrPath = OrPath.replace('\\', '/').replace('zips/', '')
+        UrlEncode = quote(replaceOrPath, 'utf-8')
+        UrlPath = "https://raw.githubusercontent.com/VaLueS6655/Genshin_Impact_Teleport/Raw/" + UrlEncode
+        print("parent: " + zipparent)
+        print("filename: " + zipfilename)
+        print("Full path: " + OrPath)
+        print("UrlEncode: " + UrlPath)
+        print("readmePath: "+ readmePath)
+        #Readme Write Down
+        readme = open(readmePath,'a',encoding='utf-8')
+        readme.write("### [%s](%s)"%(zipfilename,UrlPath))
+        #readme.write('\n %s'%(UrlPath))
+        readme.write('\n\n')
 
 
 
 #删除全部空文件夹 
 
-del_folders = []
-for root, dirs, files in os.walk(path_zips, topdown=False):
-    for name in dirs:
-        if not os.listdir(os.path.join(root, name)):
-            del_folders.append(os.path.join(root, name))
-            os.rmdir(os.path.join(root, name))
-log(del_folders)
+#del_folders = []
+#for root, dirs, files in os.walk(path_zips, topdown=False):
+#    for name in dirs:
+#        if not os.listdir(os.path.join(root, name)):
+#            del_folders.append(os.path.join(root, name))
+#            os.rmdir(os.path.join(root, name))
+#log(del_folders)
 
 # push_bat = """
 # cd ./zips
